@@ -1,6 +1,6 @@
 var mysql = require('mysql');
 var inquirer = require("inquirer");
-
+const cTable = require('console.table');
 
 
 
@@ -19,7 +19,7 @@ function viewdepartment(){
 
         connection.query('SELECT * FROM department', function(err,res){
             if (err) throw err;
-            console.log(res);
+            console.table(res);
             connection.end();
         })
     })
@@ -32,7 +32,7 @@ function viewemployees(){
 
         connection.query('SELECT * FROM employee', function(err,res){
             if (err) throw err;
-            console.log(res);
+            console.table(res);
             connection.end();
         })
     })
@@ -45,7 +45,7 @@ function viewroles(){
 
         connection.query('SELECT * FROM role', function(err,res){
             if (err) throw err;
-            console.log(res);
+            console.table(res);
             connection.end();
         })
     })
@@ -73,7 +73,71 @@ function addDepartment(){
         })
     })
 }
+
+function addEmployee(){
+    inquirer.prompt([
+        {
+            name: 'name',
+            message:'what is the first name: ',
+        },
+        {
+            name: 'roleid',
+            message:'what is the role id : ',
+        },
+        {
+            name: 'managerid',
+            message:'what is the manager id: ',
+        }
+
+    ])
+    .then(answers=>{
+        
+        connection.connect(function(err){
+            if (err) throw err; 
+            console.log("connected as id " + connection.threadId + "\n")
+
+            connection.query('INSERT INTO employee(first_name,role_id,manager_id) VALUES("'+answers.name+'","'+answers.roleid+'","'+answers.managerid+'")', function(err,res){
+                if (err) throw err;
+                console.log(res);
+                connection.end();
+            })
+        })
+    })
+}
  
+function addRoles(){
+    inquirer.prompt([
+        {
+            name: 'title',
+            message:'what is the title: ',
+        },
+        {
+            name: 'salary',
+            message:'what is the salary : ',
+        },
+        {
+            name: 'departmentid',
+            message:'what is the department id: ',
+        }
+
+    ])
+    .then(answers=>{
+        
+        connection.connect(function(err){
+            if (err) throw err; 
+            console.log("connected as id " + connection.threadId + "\n")
+
+            connection.query('INSERT INTO role(title,salary,department_id) VALUES("'+answers.title+'","'+answers.salary+'","'+answers.departmentid+'")', function(err,res){
+                if (err) throw err;
+                console.log(res);
+                connection.end();
+            })
+        })
+    })
+}
+ 
+
+
 inquirer.prompt([
     {
     type: 'list',
@@ -102,11 +166,11 @@ inquirer.prompt([
         break 
 
         case 'Add employee':
-            
+            addEmployee()
         break 
 
         case 'Add roles':
-            
+            addRoles()
         break 
 
     }
